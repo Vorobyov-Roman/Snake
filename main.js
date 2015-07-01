@@ -4,6 +4,9 @@ $(document).ready(function(){
 	var BODY_SIZE = $('#proto').width();
 	$('#proto').remove();
 
+	var WIDTH = Math.floor($('#container').width() / BODY_SIZE);
+	var HEIGHT = Math.floor($('#container').height() / BODY_SIZE);
+
 	var direction = {
 		west:  37,
 		north: 38,
@@ -36,7 +39,7 @@ $(document).ready(function(){
 			}
 		}
 	};
-	var gameBoard = new GameBoard({ width: 10, height: 10 });
+	var gameBoard = new GameBoard({ width: WIDTH, height: HEIGHT });
 
 	function Snake(){
 		function BodySegment(pos){
@@ -46,6 +49,7 @@ $(document).ready(function(){
 			});
 
 			this.domObj = $('#container').append(temp).children().last();
+			this.pos = pos;
 			this.next = null;
 		};
 
@@ -66,6 +70,7 @@ $(document).ready(function(){
 			}
 
 			if (!grow){
+				gameBoard.grid[this.tail.pos.y][this.tail.pos.y] = boardObject.emty;
 				this.tail.domObj.remove();
 				this.tail = this.tail.next;
 			}
@@ -90,6 +95,8 @@ $(document).ready(function(){
 			this.head = this.head.next;
 
 			//handle collisions here
+
+			gameBoard.grid[this.position.y][this.position.x] = boardObject.obstacle;
 		}
 
 		this.rotate = function(dir){
@@ -104,6 +111,7 @@ $(document).ready(function(){
 			}
 		};
 
+		gameBoard.grid[this.position.y][this.position.x] = boardObject.obstacle;
 		for (let i = 0; i != 10; ++i){
 			this.move(true);
 		}
@@ -116,6 +124,13 @@ $(document).ready(function(){
 
 		if (key.which == 32)
 			stop = !stop;
+
+		if (key.which == 90)
+		{
+			for (let i = 0; i != HEIGHT; ++i){
+				console.log(gameBoard.grid[i]);
+			}
+		}
 	});
 
 	setInterval(function(){
