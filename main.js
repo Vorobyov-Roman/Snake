@@ -33,6 +33,7 @@ $(document).ready(function(){
 
 		this.position = { x: 10, y: 3 };
 		this.face = direction.east;
+		this.allowRotation = true;
 
 		this.head = new BodySegment({ x: this.position.x, y: this.position.y });
 		this.tail = this.head;
@@ -69,8 +70,11 @@ $(document).ready(function(){
 			case direction.north:
 			case direction.east:
 			case direction.south:
-				if (this.face != direction.opposite(dir))
+				if (this.face != direction.opposite(dir) && this.allowRotation)
+				{
 					this.face = dir;
+					this.allowRotation = false;
+				}
 				break;
 
 			default: break;
@@ -88,6 +92,7 @@ $(document).ready(function(){
 	});
 
 	setInterval(function(){
+		snake.allowRotation = true;
 		snake.move(false);
-	}, 500);
+	}, 50);
 });
