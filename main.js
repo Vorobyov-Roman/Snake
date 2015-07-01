@@ -4,24 +4,18 @@ $(document).ready(function(){
 	var BODY_SIZE = $('#proto').width();
 	$('#proto').remove();
 
-	var cellType = {
-		empty_cell: 0,
-		obstacle:   1,
-		snake_body: 2,
-		food:       3
-	};
 	var direction = {
-		west:  0,
-		north: 1,
-		east:  2,
-		south: 3,
+		west:  37,
+		north: 38,
+		east:  39,
+		south: 40,
 
 		opposite: function(dir){
 			switch (dir) {
-			case west:  return east;
-			case north: return south;
-			case east:  return west;
-			case south: return north;
+			case this.west:  return this.east;
+			case this.north: return this.south;
+			case this.east:  return this.west;
+			case this.south: return this.north;
 			}
 		}
 	};
@@ -37,7 +31,7 @@ $(document).ready(function(){
 			this.next = null;
 		};
 
-		this.position = { x: 3, y: 3 };
+		this.position = { x: 10, y: 3 };
 		this.face = direction.east;
 
 		this.head = new BodySegment({ x: this.position.x, y: this.position.y });
@@ -69,9 +63,31 @@ $(document).ready(function(){
 			//handle collisions here
 		}
 
-		for (let i = 0; i != 2; ++i) {
+		this.rotate = function(dir){
+			switch (dir) {
+			case direction.west:
+			case direction.north:
+			case direction.east:
+			case direction.south:
+				if (this.face != direction.opposite(dir))
+					this.face = dir;
+				break;
+
+			default: break;
+			}
+		};
+
+		for (let i = 0; i != 10; ++i) {
 			this.move(true);
 		}
 	};
 	var snake = new Snake();
+
+	$(document).keydown(function(key){
+		snake.rotate(key.which);
+	});
+
+	setInterval(function(){
+		snake.move(false);
+	}, 500);
 });
