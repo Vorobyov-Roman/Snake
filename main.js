@@ -20,6 +20,24 @@ $(document).ready(function(){
 		}
 	};
 
+	var boardObject = {
+		emty: 0,
+		obstacle: 1,
+		food: 2
+	};
+
+	function GameBoard(size){
+		this.grid = new Array(size.height);
+		for (let i = 0; i != size.height; ++i){
+			this.grid[i] = new Array(size.width);
+
+			for (let j = 0; j != size.width; ++j){
+				this.grid[i][j] = boardObject.emty;
+			}
+		}
+	};
+	var gameBoard = new GameBoard({ width: 10, height: 10 });
+
 	function Snake(){
 		function BodySegment(pos){
 			var temp = $('<div class="snake"></div>').css({
