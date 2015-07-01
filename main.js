@@ -11,7 +11,7 @@ $(document).ready(function(){
 		south: 40,
 
 		opposite: function(dir){
-			switch (dir) {
+			switch (dir){
 			case this.west:  return this.east;
 			case this.north: return this.south;
 			case this.east:  return this.west;
@@ -23,8 +23,8 @@ $(document).ready(function(){
 	function Snake(){
 		function BodySegment(pos){
 			var temp = $('<div class="snake"></div>').css({
-				top:  pos.y * (BODY_SIZE / 2),
-				left: pos.x * (BODY_SIZE / 2)
+				top:  pos.y * (BODY_SIZE),
+				left: pos.x * (BODY_SIZE)
 			});
 
 			this.domObj = $('#container').append(temp).children().last();
@@ -39,12 +39,12 @@ $(document).ready(function(){
 		this.tail = this.head;
 
 		this.move = function(grow){
-			if (!grow) {
+			if (!grow){
 				this.tail.domObj.remove();
 				this.tail = this.tail.next;
 			}
 
-			switch (this.face) {
+			switch (this.face){
 			case direction.west:
 				this.head.next = new BodySegment({ x: --this.position.x, y: this.position.y });
 				break;
@@ -59,19 +59,20 @@ $(document).ready(function(){
 				break;
 			}
 
+			this.head.domObj.css('background-color', '#1F7872');
+			this.head.next.domObj.css('background-color', '#505050');
 			this.head = this.head.next;
 
 			//handle collisions here
 		}
 
 		this.rotate = function(dir){
-			switch (dir) {
+			switch (dir){
 			case direction.west:
 			case direction.north:
 			case direction.east:
 			case direction.south:
-				if (this.face != direction.opposite(dir) && this.allowRotation)
-				{
+				if (this.face != direction.opposite(dir) && this.allowRotation){
 					this.face = dir;
 					this.allowRotation = false;
 				}
@@ -81,7 +82,7 @@ $(document).ready(function(){
 			}
 		};
 
-		for (let i = 0; i != 10; ++i) {
+		for (let i = 0; i != 10; ++i){
 			this.move(true);
 		}
 	};
