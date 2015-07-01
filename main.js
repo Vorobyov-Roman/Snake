@@ -1,10 +1,8 @@
 $(document).ready(function(){
 	'use strict'
 
-	var BODY_SIZE = $('.snake').width();
-
-	var WIDTH  = 10,
-	    HEIGHT = 10;
+	var BODY_SIZE = $('#proto').width();
+	$('#proto').remove();
 
 	var cellType = {
 		empty_cell: 0,
@@ -28,32 +26,21 @@ $(document).ready(function(){
 		}
 	};
 
-	var gameBoard = new Array(HEIGHT);
-	for (let i = 0; i != gameBoard.length; ++i) {
-		gameBoard[i] = new Array(WIDTH);
-
-		for (let j = 0; j != gameBoard[i].length; ++j) {
-			gameBoard[i][j] = cellType.empty_cell;
-		}
-	}
-
 	function Snake(){
 		function BodySegment(pos){
-			this.domObj = $('<div class="snake"></div>');
-			this.next = null;
-
-			this.domObj.css({
-				top: pos.y * (BODY_SIZE / 2),
+			var temp = $('<div class="snake"></div>').css({
+				top:  pos.y * (BODY_SIZE / 2),
 				left: pos.x * (BODY_SIZE / 2)
 			});
 
-			$('#container').append(this.domObj);
+			this.domObj = $('#container').append(temp).children().last();
+			this.next = null;
 		};
 
 		this.position = { x: 3, y: 3 };
 		this.face = direction.east;
 
-		this.head = new BodySegment({ x: this.x, y: this.y });
+		this.head = new BodySegment({ x: this.position.x, y: this.position.y });
 		this.tail = this.head;
 
 		this.move = function(grow){
@@ -64,16 +51,16 @@ $(document).ready(function(){
 
 			switch (this.face) {
 			case direction.west:
-				this.head.next = new BodySegment({ x: --this.x, y: this.y });
+				this.head.next = new BodySegment({ x: --this.position.x, y: this.position.y });
 				break;
 			case direction.north:
-				this.head.next = new BodySegment({ x: this.x, y: --this.y });
+				this.head.next = new BodySegment({ x: this.position.x, y: --this.position.y });
 				break;
 			case direction.east:
-				this.head.next = new BodySegment({ x: ++this.x, y: this.y });
+				this.head.next = new BodySegment({ x: ++this.position.x, y: this.position.y });
 				break;
 			case direction.south:
-				this.head.next = new BodySegment({ x: this.x, y: ++this.y });
+				this.head.next = new BodySegment({ x: this.position.x, y: ++this.position.y });
 				break;
 			}
 

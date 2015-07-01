@@ -17,3 +17,6 @@ body {
 
 	background-color: #BADA55;
 }
+.snake#proto {
+	visibility: hidden;
+}
