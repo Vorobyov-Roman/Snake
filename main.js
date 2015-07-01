@@ -33,12 +33,20 @@ $(document).ready(function(){
 
 		this.position = { x: 10, y: 3 };
 		this.face = direction.east;
-		this.allowRotation = true;
+		this.queue = new Array();
 
 		this.head = new BodySegment({ x: this.position.x, y: this.position.y });
 		this.tail = this.head;
 
 		this.move = function(grow){
+			if (this.queue.length > 0){
+				var temp = this.queue.shift();
+
+				if (this.face != direction.opposite(temp)){
+					this.face = temp;
+				}
+			}
+
 			if (!grow){
 				this.tail.domObj.remove();
 				this.tail = this.tail.next;
@@ -72,11 +80,7 @@ $(document).ready(function(){
 			case direction.north:
 			case direction.east:
 			case direction.south:
-				if (this.face != direction.opposite(dir) && this.allowRotation){
-					this.face = dir;
-					this.allowRotation = false;
-				}
-				break;
+				this.queue.push(dir);
 
 			default: break;
 			}
@@ -87,13 +91,18 @@ $(document).ready(function(){
 		}
 	};
 	var snake = new Snake();
+	var stop = false;
 
 	$(document).keydown(function(key){
 		snake.rotate(key.which);
+
+		if (key.which == 32)
+			stop = !stop;
 	});
 
 	setInterval(function(){
-		snake.allowRotation = true;
-		snake.move(false);
+		if (!stop){
+			snake.move(false);
+		}
 	}, 50);
 });
