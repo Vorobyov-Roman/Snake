@@ -4,6 +4,16 @@ body {
 }
 
 #container {
+	position: relative;
 	width: 100vw;
 	height: 100vh;
+}
+
+.snake {
+	position: absolute;
+	border-radius: 2vmin;
+	width: 4vmin;
+	height: 4vmin;
+
+	background-color: #BADA55;
 }
