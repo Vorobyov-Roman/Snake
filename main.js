@@ -1,0 +1,3 @@
+$(document).rady(function(){
+	
+});
