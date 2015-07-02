@@ -41,6 +41,11 @@ $(document).ready(function(){
 			}
 		}
 
+		this.spawnFood = function(){
+			//find a spot
+			//create a dom object
+		};
+
 		function addDomElem(i, j){
 			var elem = $('<div class="block"></div>').css({
 				top:  i * BODY_SIZE,
