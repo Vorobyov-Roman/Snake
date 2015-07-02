@@ -11,18 +11,22 @@ body {
 	background-color: #FFF5C3;
 }
 
-.snake-body {
+.block {
 	position: absolute;
-	border-radius: 2vmin;
 	width: 4vmin;
 	height: 4vmin;
 
-	background-color: #1F7872
+	background-color: #000000;
 }
-.snake#proto {
-	visibility: hidden;
+.body {
+	
+	border-radius: 2vmin;
+	background-color: #1F7872;
+}
+.head {
+	background-color: #505050;
 }
 
-.snake-head {
-	background-color: #505050;
+.body#proto {
+	visibility: hidden;
 }

@@ -1,8 +1,8 @@
 $(document).ready(function(){
 	'use strict'
 
-	var BODY_SIZE = $('.snake-body#proto').width();
-	$('.snake-body#proto').remove();
+	var BODY_SIZE = $('.body#proto').width();
+	$('.body#proto').remove();
 
 	var WIDTH = Math.floor($('#container').width() / BODY_SIZE);
 	var HEIGHT = Math.floor($('#container').height() / BODY_SIZE);
@@ -40,12 +40,35 @@ $(document).ready(function(){
 				this.grid[i][j] = boardObject.emty;
 			}
 		}
+
+		function addDomElem(i, j){
+			var elem = $('<div class="block"></div>').css({
+				top:  i * BODY_SIZE,
+				left: j * BODY_SIZE
+			});
+			$('#container').append(elem);
+		};
+
+		for (let i = 0; i != size.height; ++i){
+			this.grid[i][0] = boardObject.obstacle;
+			this.grid[i][this.grid[i].length - 1] = boardObject.obstacle;
+
+			addDomElem(i, 0);
+			addDomElem(i, this.grid[i].length - 1);
+		}
+		for (let j = 0; j != size.width; ++j){
+			this.grid[0][j] = boardObject.obstacle;
+			this.grid[this.grid.length - 1][j] = boardObject.obstacle;
+			
+			addDomElem(0, j);
+			addDomElem(this.grid.length - 1, j);
+		}
 	};
 	var gameBoard = new GameBoard({ width: WIDTH, height: HEIGHT });
 
 	function Snake(){
 		function BodySegment(pos){
-			var temp = $('<div class="snake-body snake-head"></div>').css({
+			var temp = $('<div class="block body head"></div>').css({
 				top:  pos.y * BODY_SIZE,
 				left: pos.x * BODY_SIZE
 			});
@@ -61,7 +84,7 @@ $(document).ready(function(){
 		this.tail = new BodySegment({ x: 9, y: 3 });
 		this.head = new BodySegment({ x: 10, y: 3 });
 		this.tail.next = this.head;
-		this.tail.domObj.toggleClass('snake-head');
+		this.tail.domObj.toggleClass('head');
 
 		this.fed = false;
 
@@ -100,7 +123,7 @@ $(document).ready(function(){
 					break;
 			}
 
-			this.head.domObj.toggleClass('snake-head');
+			this.head.domObj.toggleClass('head');
 			this.head = this.head.next;
 
 			//handle collisions here
