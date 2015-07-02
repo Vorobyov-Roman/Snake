@@ -121,7 +121,7 @@ $(document).ready(function(){
 				case direction.south:
 					this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y + 1 });
 					break;
-			}
+			};
 
 			this.head.domObj.toggleClass('head');
 			this.head = this.head.next;
@@ -131,7 +131,7 @@ $(document).ready(function(){
 				case boardObject.obstacle:
 				case boardObject.snake:
 					alert('Game Over');
-					//this = new Snake();
+					return false;
 					break;
 
 				case boardObject.food:
@@ -141,7 +141,8 @@ $(document).ready(function(){
 			}
 
 			gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.snake;
-		}
+			return true;
+		};
 
 		this.rotate = function(dir){
 			switch (dir){
@@ -152,6 +153,16 @@ $(document).ready(function(){
 					this.queue.push(dir);
 
 				default: break;
+			}
+		};
+
+		this.clear = function(){
+			var body = this.tail;
+
+			while (body != null){
+				gameBoard.grid[body.pos.y][body.pos.x] = boardObject.emty;
+				body.domObj.remove();
+				body = body.next;
 			}
 		};
 
@@ -168,11 +179,9 @@ $(document).ready(function(){
 	$(document).keydown(function(key){
 		snake.rotate(key.which);
 
-		if (key.which == 32)
+		if (key.which == 32){
 			stop = !stop;
-
-		if (key.which == 90)
-		{
+		} else if (key.which == 90){
 			console.log('board:');
 			for (let i = 0; i != HEIGHT; ++i){
 				console.log(gameBoard.grid[i]);
@@ -182,7 +191,10 @@ $(document).ready(function(){
 
 	setInterval(function(){
 		if (!stop){
-			snake.move();
+			if (!snake.move()){
+				snake.clear();
+				snake = new Snake();
+			}
 		}
 	}, 50);
 });
