@@ -1,8 +1,8 @@
 $(document).ready(function(){
 	'use strict'
 
-	var BODY_SIZE = $('#proto').width();
-	$('#proto').remove();
+	var BODY_SIZE = $('.snake-body#proto').width();
+	$('.snake-body#proto').remove();
 
 	var WIDTH = Math.floor($('#container').width() / BODY_SIZE);
 	var HEIGHT = Math.floor($('#container').height() / BODY_SIZE);
@@ -43,9 +43,9 @@ $(document).ready(function(){
 
 	function Snake(){
 		function BodySegment(pos){
-			var temp = $('<div class="snake"></div>').css({
-				top:  pos.y * (BODY_SIZE),
-				left: pos.x * (BODY_SIZE)
+			var temp = $('<div class="snake-body snake-head"></div>').css({
+				top:  pos.y * BODY_SIZE,
+				left: pos.x * BODY_SIZE
 			});
 
 			this.domObj = $('#container').append(temp).children().last();
@@ -53,12 +53,13 @@ $(document).ready(function(){
 			this.next = null;
 		};
 
-		this.position = { x: 10, y: 3 };
 		this.face = direction.east;
 		this.queue = new Array();
 
-		this.head = new BodySegment({ x: this.position.x, y: this.position.y });
-		this.tail = this.head;
+		this.tail = new BodySegment({ x: 9, y: 3 });
+		this.head = new BodySegment({ x: 10, y: 3 });
+		this.tail.next = this.head;
+		this.tail.domObj.toggleClass('snake-head');
 
 		this.move = function(grow){
 			if (this.queue.length > 0){
@@ -70,33 +71,32 @@ $(document).ready(function(){
 			}
 
 			if (!grow){
-				gameBoard.grid[this.tail.pos.y][this.tail.pos.y] = boardObject.emty;
+				gameBoard.grid[this.tail.pos.y][this.tail.pos.x] = boardObject.emty;
 				this.tail.domObj.remove();
 				this.tail = this.tail.next;
 			}
 
 			switch (this.face){
 			case direction.west:
-				this.head.next = new BodySegment({ x: --this.position.x, y: this.position.y });
+				this.head.next = new BodySegment({ x: this.head.pos.x - 1, y: this.head.pos.y });
 				break;
 			case direction.north:
-				this.head.next = new BodySegment({ x: this.position.x, y: --this.position.y });
+				this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y - 1 });
 				break;
 			case direction.east:
-				this.head.next = new BodySegment({ x: ++this.position.x, y: this.position.y });
+				this.head.next = new BodySegment({ x: this.head.pos.x + 1, y: this.head.pos.y });
 				break;
 			case direction.south:
-				this.head.next = new BodySegment({ x: this.position.x, y: ++this.position.y });
+				this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y + 1 });
 				break;
 			}
 
-			this.head.domObj.css('background-color', '#1F7872');
-			this.head.next.domObj.css('background-color', '#505050');
+			this.head.domObj.toggleClass('snake-head');
 			this.head = this.head.next;
 
 			//handle collisions here
 
-			gameBoard.grid[this.position.y][this.position.x] = boardObject.obstacle;
+			gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.obstacle;
 		}
 
 		this.rotate = function(dir){
@@ -111,13 +111,14 @@ $(document).ready(function(){
 			}
 		};
 
-		gameBoard.grid[this.position.y][this.position.x] = boardObject.obstacle;
+		gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.obstacle;
+		gameBoard.grid[this.tail.pos.y][this.tail.pos.x] = boardObject.obstacle;
 		for (let i = 0; i != 10; ++i){
 			this.move(true);
 		}
 	};
 	var snake = new Snake();
-	var stop = false;
+	var stop = true;
 
 	$(document).keydown(function(key){
 		snake.rotate(key.which);
@@ -127,6 +128,7 @@ $(document).ready(function(){
 
 		if (key.which == 90)
 		{
+			console.log('board:');
 			for (let i = 0; i != HEIGHT; ++i){
 				console.log(gameBoard.grid[i]);
 			}
