@@ -15,10 +15,10 @@ $(document).ready(function(){
 
 		opposite: function(dir){
 			switch (dir){
-			case this.west:  return this.east;
-			case this.north: return this.south;
-			case this.east:  return this.west;
-			case this.south: return this.north;
+				case this.west:  return this.east;
+				case this.north: return this.south;
+				case this.east:  return this.west;
+				case this.south: return this.north;
 			}
 		}
 	};
@@ -26,11 +26,13 @@ $(document).ready(function(){
 	var boardObject = {
 		emty: 0,
 		obstacle: 1,
-		food: 2
+		snake: 2,
+		food: 3
 	};
 
 	function GameBoard(size){
 		this.grid = new Array(size.height);
+
 		for (let i = 0; i != size.height; ++i){
 			this.grid[i] = new Array(size.width);
 
@@ -61,60 +63,80 @@ $(document).ready(function(){
 		this.tail.next = this.head;
 		this.tail.domObj.toggleClass('snake-head');
 
-		this.move = function(grow){
+		this.fed = false;
+
+		this.move = function(){
 			if (this.queue.length > 0){
-				var temp = this.queue.shift();
+				let temp = this.queue.shift();
 
 				if (this.face != direction.opposite(temp)){
 					this.face = temp;
 				}
 			}
 
-			if (!grow){
+			if (!this.fed){
 				gameBoard.grid[this.tail.pos.y][this.tail.pos.x] = boardObject.emty;
 				this.tail.domObj.remove();
 				this.tail = this.tail.next;
+			} else {
+				this.fed = false;
 			}
 
 			switch (this.face){
-			case direction.west:
-				this.head.next = new BodySegment({ x: this.head.pos.x - 1, y: this.head.pos.y });
-				break;
-			case direction.north:
-				this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y - 1 });
-				break;
-			case direction.east:
-				this.head.next = new BodySegment({ x: this.head.pos.x + 1, y: this.head.pos.y });
-				break;
-			case direction.south:
-				this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y + 1 });
-				break;
+				case direction.west:
+					this.head.next = new BodySegment({ x: this.head.pos.x - 1, y: this.head.pos.y });
+					break;
+
+				case direction.north:
+					this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y - 1 });
+					break;
+
+				case direction.east:
+					this.head.next = new BodySegment({ x: this.head.pos.x + 1, y: this.head.pos.y });
+					break;
+
+				case direction.south:
+					this.head.next = new BodySegment({ x: this.head.pos.x, y: this.head.pos.y + 1 });
+					break;
 			}
 
 			this.head.domObj.toggleClass('snake-head');
 			this.head = this.head.next;
 
 			//handle collisions here
+			switch (gameBoard.grid[this.head.pos.y][this.head.pos.x]){
+				case boardObject.obstacle:
+				case boardObject.snake:
+					alert('Game Over');
+					//this = new Snake();
+					break;
 
-			gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.obstacle;
+				case boardObject.food:
+					this.fed = true;
+					//spawn another food
+					break;
+			}
+
+			gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.snake;
 		}
 
 		this.rotate = function(dir){
 			switch (dir){
-			case direction.west:
-			case direction.north:
-			case direction.east:
-			case direction.south:
-				this.queue.push(dir);
+				case direction.west:
+				case direction.north:
+				case direction.east:
+				case direction.south:
+					this.queue.push(dir);
 
-			default: break;
+				default: break;
 			}
 		};
 
-		gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.obstacle;
-		gameBoard.grid[this.tail.pos.y][this.tail.pos.x] = boardObject.obstacle;
+		gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.snake;
+		gameBoard.grid[this.tail.pos.y][this.tail.pos.x] = boardObject.snake;
 		for (let i = 0; i != 10; ++i){
-			this.move(true);
+			this.fed = true;
+			this.move();
 		}
 	};
 	var snake = new Snake();
@@ -137,7 +159,7 @@ $(document).ready(function(){
 
 	setInterval(function(){
 		if (!stop){
-			snake.move(false);
+			snake.move();
 		}
 	}, 50);
 });
