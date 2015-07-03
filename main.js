@@ -52,8 +52,8 @@ $(document).ready(function(){
 			
 			//create a dom object
 			$('#container').append($('<div class="food"></div>').css({
-				top:  index.row * BLOCK_SIZE,
-				left: index.col * BLOCK_SIZE
+				top:  index.row * BLOCK_SIZE + (BLOCK_SIZE / 4),
+				left: index.col * BLOCK_SIZE + (BLOCK_SIZE / 4)
 			}));
 		};
 
@@ -205,28 +205,21 @@ $(document).ready(function(){
 		gameBoard.spawnFood();
 	};
 	var snake = new Snake();
-	var stop = true;
-
+	
 	$(document).keydown(function(key){
 		snake.rotate(key.which);
-
-		if (key.which == 32){
-			stop = !stop;
-		}
 	});
 
 	setInterval(function(){
-		if (!stop){
-			switch (snake.move()){
-				case boardObject.obstacle:
-					snake.clear(boardObject.obstacle);
-					snake = new Snake();
-					break;
-				case boardObject.snake:
-					snake.clear(boardObject.snake);
-					snake = new Snake();
-					break;
-			}
+		switch (snake.move()){
+			case boardObject.obstacle:
+				snake.clear(boardObject.obstacle);
+				snake = new Snake();
+				break;
+			case boardObject.snake:
+				snake.clear(boardObject.snake);
+				snake = new Snake();
+				break;
 		}
 	}, 50);
 });
