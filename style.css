@@ -30,3 +30,13 @@ body {
 .body#proto {
 	visibility: hidden;
 }
+
+.food {
+	position: absolute;
+	width:  2vmin;
+	height: 2vmin;
+
+	border-radius: 1vmin;
+
+	background-color: #BADA55;
+}

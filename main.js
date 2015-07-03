@@ -35,7 +35,23 @@ $(document).ready(function(){
 
 		this.spawnFood = function(){
 			//find a spot
+			var temp = new Array();
+			for (let i = 0; i != size.height; ++i){
+				for (let j = 0; j != size.width; ++j){
+					if (this.grid[i][j] == boardObject.emty){
+						temp.push({ row: i, col: j });
+					}
+				}
+			}
+			var index = temp[Math.floor(Math.random() * temp.length)];
+			this.grid[index.row][index.col] = boardObject.food;
+			
 			//create a dom object
+			$('.food').remove();
+			$('#container').append($('<div class="food"></div>').css({
+				top:  index.row * BODY_SIZE,
+				left: index.col * BODY_SIZE
+			}));
 		};
 
 		for (let i = 0; i != size.height; ++i){
@@ -140,7 +156,7 @@ $(document).ready(function(){
 
 				case boardObject.food:
 					this.fed = true;
-					//spawn another food
+					gameBoard.spawnFood();
 					break;
 			}
 
@@ -176,29 +192,19 @@ $(document).ready(function(){
 			this.fed = true;
 			this.move();
 		}
+
+		gameBoard.spawnFood();
 	};
 	var snake = new Snake();
-	var stop = true;
 
 	$(document).keydown(function(key){
 		snake.rotate(key.which);
-
-		if (key.which == 32){
-			stop = !stop;
-		} else if (key.which == 90){
-			console.log('board:');
-			for (let i = 0; i != HEIGHT; ++i){
-				console.log(gameBoard.grid[i]);
-			}
-		}
 	});
 
 	setInterval(function(){
-		if (!stop){
-			if (!snake.move()){
-				snake.clear();
-				snake = new Snake();
-			}
+		if (!snake.move()){
+			snake.clear();
+			snake = new Snake();
 		}
 	}, 50);
 });
