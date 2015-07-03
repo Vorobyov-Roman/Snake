@@ -33,6 +33,11 @@ $(document).ready(function(){
 	function GameBoard(size){
 		this.grid = new Array(size.height);
 
+		this.spawnFood = function(){
+			//find a spot
+			//create a dom object
+		};
+
 		for (let i = 0; i != size.height; ++i){
 			this.grid[i] = new Array(size.width);
 
@@ -41,33 +46,27 @@ $(document).ready(function(){
 			}
 		}
 
-		this.spawnFood = function(){
-			//find a spot
-			//create a dom object
-		};
-
-		function addDomElem(i, j){
-			var elem = $('<div class="block"></div>').css({
-				top:  i * BODY_SIZE,
-				left: j * BODY_SIZE
-			});
-			$('#container').append(elem);
-		};
-
 		for (let i = 0; i != size.height; ++i){
 			this.grid[i][0] = boardObject.obstacle;
 			this.grid[i][this.grid[i].length - 1] = boardObject.obstacle;
-
-			addDomElem(i, 0);
-			addDomElem(i, this.grid[i].length - 1);
 		}
 		for (let j = 0; j != size.width; ++j){
 			this.grid[0][j] = boardObject.obstacle;
 			this.grid[this.grid.length - 1][j] = boardObject.obstacle;
-			
-			addDomElem(0, j);
-			addDomElem(this.grid.length - 1, j);
 		}
+
+		function addBorder(t, l, w, h){
+			$('#container').append($('<div class="block"></div>').css({
+				top:    t * BODY_SIZE,
+				left:   l * BODY_SIZE,
+				width:  w * BODY_SIZE,
+				height: h * BODY_SIZE
+			}));
+		}
+		addBorder(0, 0, 1, this.grid.length);                        //left
+		addBorder(0, this.grid[0].length - 1, 1, this.grid.length);  //right
+		addBorder(0, 0, this.grid[0].length, 1);                     //top
+		addBorder(this.grid.length - 1, 0, this.grid[0].length, 1);  //bottom
 	};
 	var gameBoard = new GameBoard({ width: WIDTH, height: HEIGHT });
 
