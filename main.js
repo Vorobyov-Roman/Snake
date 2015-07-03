@@ -1,11 +1,11 @@
 $(document).ready(function(){
 	'use strict'
 
-	var BODY_SIZE = $('.body#proto').width();
-	$('.body#proto').remove();
+	var BLOCK_SIZE = $('#proto').width();
+	$('#proto').remove();
 
-	var WIDTH = Math.floor($('#container').width() / BODY_SIZE);
-	var HEIGHT = Math.floor($('#container').height() / BODY_SIZE);
+	var WIDTH = Math.floor($('#container').width() / BLOCK_SIZE);
+	var HEIGHT = Math.floor($('#container').height() / BLOCK_SIZE);
 
 	var direction = {
 		west:  37,
@@ -24,10 +24,10 @@ $(document).ready(function(){
 	};
 
 	var boardObject = {
-		emty: 0,
+		emty:     0,
 		obstacle: 1,
-		snake: 2,
-		food: 3
+		snake:    2,
+		food:     3
 	};
 
 	function GameBoard(size){
@@ -38,8 +38,12 @@ $(document).ready(function(){
 			var temp = new Array();
 			for (let i = 0; i != size.height; ++i){
 				for (let j = 0; j != size.width; ++j){
-					if (this.grid[i][j] == boardObject.emty){
-						temp.push({ row: i, col: j });
+					switch (this.grid[i][j]){
+						case boardObject.food:
+							this.grid[i][j] = boardObject.emty;
+							$('.food').remove();
+						case boardObject.emty:
+							temp.push({ row: i, col: j });
 					}
 				}
 			}
@@ -47,10 +51,9 @@ $(document).ready(function(){
 			this.grid[index.row][index.col] = boardObject.food;
 			
 			//create a dom object
-			$('.food').remove();
 			$('#container').append($('<div class="food"></div>').css({
-				top:  index.row * BODY_SIZE,
-				left: index.col * BODY_SIZE
+				top:  index.row * BLOCK_SIZE,
+				left: index.col * BLOCK_SIZE
 			}));
 		};
 
@@ -73,10 +76,10 @@ $(document).ready(function(){
 
 		function addBorder(t, l, w, h){
 			$('#container').append($('<div class="block"></div>').css({
-				top:    t * BODY_SIZE,
-				left:   l * BODY_SIZE,
-				width:  w * BODY_SIZE,
-				height: h * BODY_SIZE
+				top:    t * BLOCK_SIZE,
+				left:   l * BLOCK_SIZE,
+				width:  w * BLOCK_SIZE,
+				height: h * BLOCK_SIZE
 			}));
 		}
 		addBorder(0, 0, 1, this.grid.length);                        //left
@@ -89,8 +92,8 @@ $(document).ready(function(){
 	function Snake(){
 		function BodySegment(pos){
 			var temp = $('<div class="block body head"></div>').css({
-				top:  pos.y * BODY_SIZE,
-				left: pos.x * BODY_SIZE
+				top:  pos.y * BLOCK_SIZE,
+				left: pos.x * BLOCK_SIZE
 			});
 
 			this.domObj = $('#container').append(temp).children().last();
@@ -149,10 +152,12 @@ $(document).ready(function(){
 			//handle collisions here
 			switch (gameBoard.grid[this.head.pos.y][this.head.pos.x]){
 				case boardObject.obstacle:
+					alert('Game Over');
+					return boardObject.obstacle;
+
 				case boardObject.snake:
 					alert('Game Over');
-					return false;
-					break;
+					return boardObject.snake;
 
 				case boardObject.food:
 					this.fed = true;
@@ -161,7 +166,7 @@ $(document).ready(function(){
 			}
 
 			gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.snake;
-			return true;
+			return gameBoard.emty;
 		};
 
 		this.rotate = function(dir){
@@ -176,13 +181,17 @@ $(document).ready(function(){
 			}
 		};
 
-		this.clear = function(){
+		this.clear = function(collision){
 			var body = this.tail;
 
 			while (body != null){
 				gameBoard.grid[body.pos.y][body.pos.x] = boardObject.emty;
 				body.domObj.remove();
 				body = body.next;
+			}
+
+			if (collision == boardObject.obstacle){
+				gameBoard.grid[this.head.pos.y][this.head.pos.x] = boardObject.obstacle;
 			}
 		};
 
@@ -196,15 +205,28 @@ $(document).ready(function(){
 		gameBoard.spawnFood();
 	};
 	var snake = new Snake();
+	var stop = true;
 
 	$(document).keydown(function(key){
 		snake.rotate(key.which);
+
+		if (key.which == 32){
+			stop = !stop;
+		}
 	});
 
 	setInterval(function(){
-		if (!snake.move()){
-			snake.clear();
-			snake = new Snake();
+		if (!stop){
+			switch (snake.move()){
+				case boardObject.obstacle:
+					snake.clear(boardObject.obstacle);
+					snake = new Snake();
+					break;
+				case boardObject.snake:
+					snake.clear(boardObject.snake);
+					snake = new Snake();
+					break;
+			}
 		}
 	}, 50);
 });
